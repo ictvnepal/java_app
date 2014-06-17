@@ -8,16 +8,17 @@ package com.models;
 import com.db.DBConnection;
 import com.db.Param;
 import com.db.Type;
+import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
  *
- * @author forsell
+ * @author Dixanta Bahadur Shrestha
  */
-public class User {
+public class User implements Serializable {
 
-    private int userId;
+    private int userId=0;
     private String userName;
     private String email;
     private String password;
@@ -106,17 +107,39 @@ public class User {
 
     public void save()
     {
-        String sql="Insert into users(username,email,password,created_date,status) values(?,?,?,?,?)";
+        String sql="";
         try{
         DBConnection db=new DBConnection();
         db.open();
         db.addParameters(1,new Param(Type.String,getUserName()));
         db.addParameters(2,new Param(Type.String,getEmail()));
         db.addParameters(3,new Param(Type.String,getPassword()));
-        java.util.Date today = new java.util.Date();
+        if(getUserId()==0){
+            sql="Insert into users(username,email,password,created_date,status) values(?,?,?,?,?)";
+            java.util.Date today = new java.util.Date();
+            db.addParameters(4, new Param(Type.TimeStamp,new java.sql.Timestamp(today.getTime())));
+            db.addParameters(5,new Param(Type.Integer,getStatus()));
+        }
+        else{
+         sql="Update users set username=?,email=?,password=?,status=? where user_id=?";
+            db.addParameters(4,new Param(Type.Integer,getStatus()));
+            db.addParameters(5,new Param(Type.Integer,getUserId()));
+        }
+        db.execute(sql);
+        db.close();
+        }catch(Exception ex)
+        {
+            System.out.println(ex.getMessage());
+        }
+    }
 
-        db.addParameters(4, new Param(Type.TimeStamp,new java.sql.Timestamp(today.getTime())));
-         db.addParameters(5,new Param(Type.Integer,getStatus()));
+    public static void delete(int id)
+    {
+        String sql="delete from users where user_id=?";
+        try{
+        DBConnection db=new DBConnection();
+        db.open();
+        db.addParameters(1,new Param(Type.Integer,id));
         db.execute(sql);
         db.close();
         }catch(Exception ex)

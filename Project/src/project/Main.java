@@ -6,6 +6,7 @@
 package project;
 
 
+
 import com.views.MainForm;
 
 /**
@@ -17,9 +18,9 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws CloneNotSupportedException {
+    public static void main(String[] args) {
         // TODO code application logic here
-       new MainForm();
+      new MainForm();
 
     }
 
